@@ -19,6 +19,10 @@ class MetricsSpider(scrapy.Spider):
 
 		TechniqueData = {} #to be used as dynamic item
 
+		techniquename = response.css('h1::text').extract()
+		techniquename = "".join(techniquename).strip().replace("\n", "")
+		TechniqueData['techniquename'] = techniquename
+
 		keys = response.xpath("//span[@class = 'h5 card-title']")
 		values = response.xpath("//div[@class = 'col-md-11 pl-0']")
 		
@@ -48,24 +52,8 @@ class MetricsSpider(scrapy.Spider):
 				
 			TechniqueData[key[0].lower()] = temp_val
 
-			#temp_val = []
-			#if key[0] == "id":
-			#	TechniqueData["ID"] = value
-			#else:
-			#	for j in range(len(value)):
-			#		value[j] = value[j].strip()
-			#		if not "\n" in value[j] and len(value[j]) > 1:
-			#			temp_val.append(value[j])
-			#	TechniqueData[key[0]] = temp_val
-
-		#	for j in range(len(value)):
-		#		value[j] = value[j].strip()
-		#		if not "\n" in value[j] and len(value[j]) > 1:
-		#			temp_val.append(value[j])
-		#	TechniqueData[key[0]] = temp_val
-
-		TechniqueData['Detection'] = "".join(response.xpath("//div[@class = 'container-fluid']/div/p/text()").extract())
-		TechniqueData['Description'] = "".join(response.xpath("//div[@class = 'description-body']/p/a/text()" + "|" 
+		TechniqueData['detection'] = "".join(response.xpath("//div[@class = 'container-fluid']/div/p/text()").extract())
+		TechniqueData['description'] = "".join(response.xpath("//div[@class = 'description-body']/p/a/text()" + "|" 
 			+ "//div[@class = 'description-body']/p/text()").extract())	
 
 		Mitigations = {}
@@ -95,8 +83,6 @@ class MetricsSpider(scrapy.Spider):
 			if not Mitigations:
 				Mitigations['mitigations'] = response.xpath("//div[@class = 'container-fluid']/p[not(@scite-citeref-number)]/text()").extract()[0].strip() 
 				TechniqueData['mitigations']= Mitigations
-
-
 
 		#returning the created dictionary
 		yield MitreItem( **TechniqueData )

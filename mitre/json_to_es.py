@@ -38,10 +38,8 @@ try:
     resp = helpers.bulk(
     client,
     docs,
-    index = "mitretest",
-    #doc_type = "tactics123",
+    index = "mitre",
     stats_only=True,
-    #request_timeout=300
     )
     print ("helpers.bulk() RESPONSE:", resp)
     print ("helpers.bulk() RESPONSE:", json.dumps(resp, indent=4))
