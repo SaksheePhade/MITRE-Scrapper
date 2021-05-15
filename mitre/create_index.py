@@ -2,9 +2,13 @@ import requests
 import json
 from elasticsearch import Elasticsearch
 es = Elasticsearch()
-es.indices.create(index='mitretest', ignore=400)
 
-url = 'http://localhost:9200/mitretest/_settings'
+#deleting existing index
+requests.delete('http://localhost:9200/mitre')
+
+es.indices.create(index='mitre', ignore=400)
+
+url = 'http://localhost:9200/mitre/_settings'
 body = {"index.mapping.total_fields.limit": 100000}
 headers = {'content-type': 'application/json'}
 
