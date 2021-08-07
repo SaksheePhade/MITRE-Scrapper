@@ -24,7 +24,7 @@ pipelines:
           - docker
     - step:
         name: Deploy
-        deployment: dev
+        deployment: Test
         script:
           - sed -i "s|{{image}}|$ECR/mit/scrapper:${BITBUCKET_COMMIT}|g" deployment.yml
           - pipe: atlassian/aws-eks-kubectl-run:1.3.1
