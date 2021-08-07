@@ -13,4 +13,4 @@ pipelines:
           caches:
             - pip
           script:
-            - if [ -f requirements.txt ]; then pip3 install -r requirements.txt; fi
+            - pip install -r requirements.txt
