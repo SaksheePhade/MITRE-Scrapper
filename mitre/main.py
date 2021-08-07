@@ -1,7 +1,5 @@
 import os
 
-
-
 if __name__ == '__main__':
     os.system('scrapy crawl metrics')
     os.system('python3 create_index.py')
