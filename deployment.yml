@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: mitre-scrapper
+  namespace: services
+spec:
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: mitre-scrapper
+              image: {{image}}
+              imagePullPolicy: Always
+              env:
+              - name: ELS_URL
+                value: dev-es-http.databases.svc.cluster.local:9200
+              - name: ELS_USERNAME
+                value: "elastic"
+              - name: ELS_PASSWORD
+                value: "9KACp49956n73ok2aqbcoI4I"
+          restartPolicy: OnFailure
