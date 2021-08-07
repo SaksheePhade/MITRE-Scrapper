@@ -11,8 +11,6 @@ pipelines:
   default:
     - step:
         name: Build Container
-        caches:
-          - pip
         script:
           - docker build -t mit/scrapper -t mit/scrapper:${BITBUCKET_COMMIT} .
           - pipe: atlassian/aws-ecr-push-image:1.4.1
