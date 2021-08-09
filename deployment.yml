@@ -11,7 +11,7 @@ spec:
         spec:
           containers:
             - name: mitre-scrapper
-              image: 968190641609.dkr.ecr.us-east-1.amazonaws.com/mit/scrapper
+              image: {{image}}
               imagePullPolicy: Always
               env:
                 - name: ELS_URL
