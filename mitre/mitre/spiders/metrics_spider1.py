@@ -1,20 +1,20 @@
-import scrapy
+import scrapy, time
 import re
 import string, collections
 from ..items import MitreItem
+import logging
+from scrapy.utils.log import configure_logging 
 
 class MetricsSpider(scrapy.Spider):
-	
-
 	name = 'metrics'  #name of the spider
 	start_urls = [
-	  #url which we want to scrap
 		'https://attack.mitre.org'
 	]
 
 	def parse(self, response):
 		url = response.css('table.techniques-table a::attr(href)').extract()
 		for item in url:
+			time.sleep(0.2)
 			yield response.follow(item, callback = self.parse_dir_contents)
 
 	def parse_dir_contents(self, response):
@@ -108,7 +108,10 @@ class MetricsSpider(scrapy.Spider):
 					if not "\n" in value[j] and len(value[j]) > 1:
 						temp_val.append(value[j])
 				
-			TechniqueData[key[0].lower()] = temp_val
+			if key[0] == "id":
+				TechniqueData["tid"] = temp_val
+			else :
+				TechniqueData[key[0].lower()] = temp_val
         
 		if len(datasource_val) > 0:
 			res1 = list(datasource_val.keys())[0]
@@ -176,7 +179,6 @@ class MetricsSpider(scrapy.Spider):
 				tm["target_data_element"] = rel[i]["target_data_element"]
 				xyz[ds["name"]]["relationships"].append(tm)
 
-		#MainDict['datasources'][git_name] = []
 		for kyz in xyz:
 			MainDict['datasources'][git_name].append(xyz[kyz])
 
@@ -194,4 +196,5 @@ class MetricsSpider(scrapy.Spider):
 		else:
 			ks =  list(MainDict['datasources'].keys())[spc]
 			uu = MainDict['datasources'][ks]
+			time.sleep(0.5)
 			yield scrapy.Request(uu[0], callback=self.parse_ds_contents, meta={'ds': uu[1:], 'MainDict':MainDict, 'spc' : spc + 1}, dont_filter=True)
