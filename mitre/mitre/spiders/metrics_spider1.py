@@ -118,7 +118,7 @@ class MetricsSpider(scrapy.Spider):
 						temp_val.append(value[j])
 				
 			if key[0] == "id":
-				TechniqueData["id"] = temp_val
+				TechniqueData["tid"] = temp_val
 			else :
 				TechniqueData[key[0].lower()] = temp_val
         
