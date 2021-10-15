@@ -33,36 +33,10 @@ if __name__ == '__main__':
         es.indices.delete(index='mitre', ignore=400)
     except Exception as e:
         print("Index does not exists. Continue.")
-        
-    mapping = {  
-            "mappings":{  
-                "properties":{  
-                    "datasources":{  
-                        "type":"nested",
-                        "properties":{
-                            "name":{"type":"text"},
-                            "type":{"type":"text"},
-                            "description":{"type":"text"},
-                            "relatinships":{
-                                "type":"nested",
-                                "properties":{
-                                    "source_data_element":{"type":"text"},
-                                    "target_data_element":{"type":"text"},
-                                    "relationship":{"type":"text"}
-                                }
-                            }    
-                        }
-                    }
-                }
-            }
-        }    
-    
-    es.indices.create(index='mitre', ignore=400, body = mapping)
+    es.indices.create(index='mitre', ignore=400)
 
     output = es.indices.put_settings(index='mitre',
                                      body={"index": {
-                                         "mapping.total_fields.limit": 100000,
-                                         "mapping.nested_fields.limit" : 100000,
-                                         "mapping.nested_objects.limit" : 100000
+                                         "mapping.total_fields.limit": 100000
                                      }})
     print("Index got created!")
