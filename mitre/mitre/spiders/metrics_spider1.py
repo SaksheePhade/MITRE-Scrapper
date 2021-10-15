@@ -2,21 +2,12 @@ import scrapy, time
 import re
 import string, collections
 from ..items import MitreItem
-import logging
-from scrapy.utils.log import configure_logging 
+#import logging
+#from scrapy.utils.log import configure_logging 
 
 class MetricsSpider(scrapy.Spider):
-	# configure_logging(install_root_handler=False)
-	# logging.basicConfig(
-	# 	filename='log.txt',
-	# 	format='%(levelname)s: %(message)s',
-	# 	level=logging.ERROR
-	# )
-
 	name = 'metrics'  #name of the spider
 	start_urls = [
-		#'https://attack.mitre.org/techniques/T1204/',
-		#'https://attack.mitre.org/techniques/T1595/'  #url which we want to scrap
 		'https://attack.mitre.org'
 	]
 
@@ -188,7 +179,6 @@ class MetricsSpider(scrapy.Spider):
 				tm["target_data_element"] = rel[i]["target_data_element"]
 				xyz[ds["name"]]["relationships"].append(tm)
 
-		#MainDict['datasources'][git_name] = []
 		for kyz in xyz:
 			MainDict['datasources'][git_name].append(xyz[kyz])
 
