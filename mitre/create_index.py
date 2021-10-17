@@ -57,7 +57,7 @@ if __name__ == '__main__':
             }
         }    
     
-    es.indices.create(index='mitre', ignore=400)
+    es.indices.create(index='mitre', ignore=400, body = mapping)
 
     output = es.indices.put_settings(index='mitre',
                                      body={"index": {
