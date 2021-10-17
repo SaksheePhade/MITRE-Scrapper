@@ -95,7 +95,7 @@ class MetricsSpider(scrapy.Spider):
 				datasource_val = temp_val
 
 
-			elif key[0]=="id" or key[0]=="tactic" or key[0]=="subtechniqueof" or key[0]=="created" or key[0]=="lastmodified" or key[0]=="version":
+			elif key[0]=="id" or key[0]=="subtechniqueof" or key[0]=="created" or key[0]=="lastmodified" or key[0]=="version":
 				temp_val=""
 				for j in range(len(value)):			
 					value[j] = value[j].strip()
@@ -107,8 +107,11 @@ class MetricsSpider(scrapy.Spider):
 					value[j] = value[j].strip()
 					if not "\n" in value[j] and len(value[j]) > 1:
 						temp_val.append(value[j])
+						
+			if key[0] == "tactic":
+				TechniqueData["tactics"] = temp_val
 				
-			if key[0] == "id":
+			elif key[0] == "id":
 				TechniqueData["tid"] = temp_val
 			else :
 				TechniqueData[key[0].lower()] = temp_val
