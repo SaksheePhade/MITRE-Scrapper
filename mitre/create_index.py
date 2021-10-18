@@ -40,15 +40,15 @@ if __name__ == '__main__':
                     "datasources":{  
                         "type":"nested",
                         "properties":{
-                            "name":{"type":"text"},
-                            "type":{"type":"text"},
-                            "description":{"type":"text"},
+                            "name":{"type":"string"},
+                            "type":{"type":"string"},
+                            "description":{"type":"string"},
                             "relatinships":{
                                 "type":"nested",
                                 "properties":{
-                                    "source_data_element":{"type":"text"},
-                                    "target_data_element":{"type":"text"},
-                                    "relationship":{"type":"text"}
+                                    "source_data_element":{"type":"string"},
+                                    "target_data_element":{"type":"string"},
+                                    "relationship":{"type":"string"}
                                 }
                             }    
                         }
