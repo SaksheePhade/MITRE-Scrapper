@@ -4,6 +4,7 @@ from elasticsearch import Elasticsearch
 
 
 def get_els_client():
+    #establishing connection with elastic search on port 9200 using Elasticsearch module
     default_els_host = "localhost:9200"
 
     els_host = os.environ.get('ELS_HOST')
@@ -30,25 +31,27 @@ def get_els_client():
 if __name__ == '__main__':
     es = get_els_client()
     try:
-        es.indices.delete(index='mitre', ignore=400)
+        #deleting the previous index to avoid duplication of data
+        es.indices.delete(index='mitre', ignore=400) 
     except Exception as e:
         print("Index does not exists. Continue.")
-        
+
+    #this mapping is for the datasources field 
     mapping = {  
             "mappings":{  
                 "properties":{  
                     "datasources":{  
                         "type":"nested",
                         "properties":{
-                            "name":{"type":"string"},
-                            "type":{"type":"string"},
-                            "description":{"type":"string"},
+                            "name":{"type":"text"},
+                            "type":{"type":"text"},
+                            "description":{"type":"text"},
                             "relatinships":{
                                 "type":"nested",
                                 "properties":{
-                                    "source_data_element":{"type":"string"},
-                                    "target_data_element":{"type":"string"},
-                                    "relationship":{"type":"string"}
+                                    "source_data_element":{"type":"text"},
+                                    "target_data_element":{"type":"text"},
+                                    "relationship":{"type":"text"}
                                 }
                             }    
                         }
@@ -57,8 +60,10 @@ if __name__ == '__main__':
             }
         }    
     
+    #creating the index with the specified mapping
     es.indices.create(index='mitre', ignore=400, body = mapping)
 
+    #changing the field limits to avoid errors
     output = es.indices.put_settings(index='mitre',
                                      body={"index": {
                                          "mapping.total_fields.limit": 100000,

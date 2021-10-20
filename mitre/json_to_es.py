@@ -5,6 +5,7 @@ from elasticsearch import Elasticsearch, helpers
 
 
 def get_els_client():
+    #establishing connection with elastic search on port 9200 using Elasticsearch module
     default_els_host = "localhost:9200"
 
     els_host = os.environ.get('ELS_HOST')
@@ -35,7 +36,6 @@ if __name__ == '__main__':
     def get_data_from_text_file(self):
         # the function will return a list of docs
         return [l.strip() for l in open(str(self), encoding="utf8", errors='ignore')]
-
 
     # call the function to get the string data containing docs
     docs = get_data_from_text_file("MitreData.json")

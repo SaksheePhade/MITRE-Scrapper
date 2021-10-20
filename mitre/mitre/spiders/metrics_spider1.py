@@ -2,36 +2,43 @@ import scrapy, time
 import re
 import string, collections
 from ..items import MitreItem
-#import logging
-#from scrapy.utils.log import configure_logging 
 
 class MetricsSpider(scrapy.Spider):
 	name = 'metrics'  #name of the spider
 	start_urls = [
-		'https://attack.mitre.org'
+		'https://attack.mitre.org' #url to scrap
 	]
 
 	def parse(self, response):
+		# root url is passed to this fun and it will call parse_dir_contents for each nested link
 		url = response.css('table.techniques-table a::attr(href)').extract()
 		for item in url:
-			time.sleep(0.2)
+			time.sleep(0.2) #added this to avoid 429 error
 			yield response.follow(item, callback = self.parse_dir_contents)
 
-	def parse_dir_contents(self, response):
-		TechniqueData = {}
+	def parse_dir_contents(self, response): #to scrap details of each technique
+
+		TechniqueData = {} #dictionary that will store the details of a single technique
+
+		#extracting the technique name
 		techniquename = response.css('h1::text').extract()
 		techniquename = "".join(techniquename).strip().replace("\n", "")
 		TechniqueData['techniquename'] = techniquename
 
+		# extracting detection field
 		TechniqueData['detection'] = "".join(response.xpath("//div[@class = 'container-fluid']/div/p/text()").extract())
+		
+		# extracting description field
 		TechniqueData['description'] = "".join(response.xpath("//div[@class = 'description-body']/p/a/text()" + "|" 
 			+ "//div[@class = 'description-body']/p/text()").extract())	
 
+		#dictionaries for storing Mitigations and Procedure Examples fields
 		Mitigations = {}
 		ProcedureExamples = {}		    
 
 		tables = response.xpath("//table[@class = 'table table-bordered table-alternate mt-2']")
 
+		#extracting Mitigations and Procedure Examples fields
 		for i in range(len(tables)):
 			type = tables[i].xpath('thead/tr/th/text()').extract()[1]
 			for row in tables[i].xpath('tbody/tr'):
@@ -55,6 +62,7 @@ class MetricsSpider(scrapy.Spider):
 				Mitigations['mitigations'] = response.xpath("//div[@class = 'container-fluid']/p[not(@scite-citeref-number)]/text()").extract()[0].strip() 
 				TechniqueData['mitigations']= Mitigations
 
+		# extracting the fields from cards
 		keys = response.xpath("//span[@class = 'h5 card-title']")
 		values = response.xpath("//div[@class = 'col-md-11 pl-0']")
 		datasource_val={}
@@ -69,6 +77,7 @@ class MetricsSpider(scrapy.Spider):
 			key[0] = key[0].lower()
 			value = values[i].xpath('text()' + "|" + "a/text()").extract()
 			
+			#extracting the datasources field
 			if key[0]=="datasources":
 				key_value = values[i].xpath("a/text()").extract()
 				ds_url = values[i].xpath("a/@href").extract()
@@ -94,28 +103,31 @@ class MetricsSpider(scrapy.Spider):
 						temp_val[k] = [v, vi]
 				datasource_val = temp_val
 
-
+			# some fields have single values so extracting them as string
 			elif key[0]=="id" or key[0]=="subtechniqueof" or key[0]=="created" or key[0]=="lastmodified" or key[0]=="version":
 				temp_val=""
 				for j in range(len(value)):			
 					value[j] = value[j].strip()
 					if not "\n" in value[j] and len(value[j]) > 1:
 						temp_val+=value[j]
+			#extracting the remaining fields as arrays
 			else:
 				temp_val = []
 				for j in range(len(value)):	
 					value[j] = value[j].strip()
 					if not "\n" in value[j] and len(value[j]) > 1:
 						temp_val.append(value[j])
-						
+
+			#converting the field value tactic => tactics so ensure uniformity			
 			if key[0] == "tactic":
 				TechniqueData["tactics"] = temp_val
 				
-			elif key[0] == "id":
-				TechniqueData["tid"] = temp_val
+			# elif key[0] == "id":
+			# 	TechniqueData["tid"] = temp_val
 			else :
 				TechniqueData[key[0].lower()] = temp_val
         
+		#extracting the datasources field from the github pages
 		if len(datasource_val) > 0:
 			res1 = list(datasource_val.keys())[0]
 			res = datasource_val[res1]
@@ -124,7 +136,7 @@ class MetricsSpider(scrapy.Spider):
 		else:
 			yield MitreItem(**TechniqueData)	
 		
-	#function for scraping datasources
+	#recursive function for scraping datasources
 	def parse_ds_contents(self, response):
 		item = response.meta.get('ds')
 		MainDict=response.meta.get('MainDict')
